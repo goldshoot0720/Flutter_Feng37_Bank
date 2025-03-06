@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
       sumSaving += int.parse(bankSavings[i]);
     }
     if ( sumSaving >= 100000000){
-      howIRich = "億元豪宅";
+      howIRich = "億萬豪宅";
     }
     else if ( sumSaving >= 10000000){
       howIRich = "仟萬超跑";
