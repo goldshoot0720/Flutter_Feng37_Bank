@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -58,7 +59,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String selectedValue = "0"; // 在這裡聲明 selectedValue，而不是放在 build 方法裡
-  List<String> bank_savings = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0",];
+  List<String> bank_savings = [
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+  ];
 
   int calcSumSaving(List<String> bankSavings) {
     int sumSaving = 0;
@@ -103,6 +115,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _loadData();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   @override
@@ -113,6 +129,29 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+    double screenWidth = MediaQuery.of(context).size.width;
+    double myWidth = screenWidth;
+    if (screenWidth < 500) {
+      myWidth = screenWidth / 8; // 62.5
+    } else if (screenWidth < 1000) {
+      myWidth = screenWidth / 12;
+    } else if (screenWidth < 1500) {
+      myWidth = screenWidth / 18; // 83.3
+    } else {
+      myWidth = 100;
+    }
+    double screenHeight = MediaQuery.of(context).size.height;
+    double myHeight = screenHeight;
+    if (screenHeight < 1000) {
+      myHeight = screenHeight / 20; // 50
+    } else if (screenHeight < 1000) {
+      myHeight = screenHeight / 30;
+    } else if (screenHeight < 1500) {
+      myHeight = screenHeight / 45; // 33.3
+    } else {
+      myHeight = 30;
+    }
+    print(screenWidth.toString() + "," + screenHeight.toString());
     _controller2.text =
         _controller2.text = calcSumSaving(bank_savings).toString();
     return Scaffold(
@@ -143,33 +182,44 @@ class _MyHomePageState extends State<MyHomePage> {
           // action in the IDE, or press "p" in the console), to see the
           // wireframe for each widget.
           children: <Widget>[
-            SizedBox(height: 20),
             Row(
               children: <Widget>[
-                SizedBox(width: 50),
-                Text('金融機構：'),
-                SizedBox(width: 50),
-                CustomDropdown(
-                  selectedValue: selectedValue,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedValue = value!;
-                    });
-                  },
-                  controller1: _controller,
-                  controller2: _controller2,
-                  bank_savings: bank_savings,
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: myWidth,
+                    vertical: myHeight,
+                  ),
+                  child: Text('金融機構：'),
+                ),
+                Container(
+                  width: 150, // Set the width of the TextField
+
+                  child: CustomDropdown(
+                    selectedValue: selectedValue,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedValue = value!;
+                      });
+                    },
+                    controller1: _controller,
+                    controller2: _controller2,
+                    bank_savings: bank_savings,
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 20),
             Row(
               children: <Widget>[
-                SizedBox(width: 50),
-                Text('存款金額：'),
-                SizedBox(width: 50),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: myWidth,
+                    vertical: myHeight,
+                  ),
+                  child: Text('存款金額：'),
+                ),
                 Container(
                   width: 150, // Set the width of the TextField
+
                   child: TextField(
                     controller: _controller,
                     decoration: InputDecoration(
@@ -180,14 +230,18 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
             Row(
               children: <Widget>[
-                SizedBox(width: 50),
-                Text('累積存款：'),
-                SizedBox(width: 50),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: myWidth,
+                    vertical: myHeight,
+                  ),
+                  child: Text('累積存款：'),
+                ),
                 Container(
                   width: 150, // Set the width of the TextField
+
                   child: TextField(
                     controller: _controller2,
                     decoration: InputDecoration(
@@ -198,25 +252,56 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
             Row(
               children: <Widget>[
-                SizedBox(width: 50),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      if (!isInteger(_controller.text)) {
-                        _controller2.text = "請輸入數字";
-                        return;
-                      }
-                      // 更新存款金額
-                      bank_savings[int.parse(selectedValue)] = _controller.text;
-                      // 更新累積存款顯示框
-                      _controller2.text =
-                          calcSumSaving(bank_savings).toString();
-                      print(selectedValue);
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: myWidth,
+                    vertical: myHeight,
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        if (!isInteger(_controller.text)) {
+                          _controller2.text = "請輸入數字";
+                          return;
+                        }
+                        // 更新存款金額
+                        bank_savings[int.parse(selectedValue)] =
+                            _controller.text;
+                        // 更新累積存款顯示框
+                        _controller2.text =
+                            calcSumSaving(bank_savings).toString();
+                        print(selectedValue);
+                        Fluttertoast.showToast(
+                          msg: "已修改",
+                          // 顯示的訊息
+                          toastLength: Toast.LENGTH_SHORT,
+                          // 顯示時長
+                          gravity: ToastGravity.CENTER,
+                          // 顯示位置
+                          timeInSecForIosWeb: 1,
+                          // iOS Web 端顯示時間
+                          backgroundColor: Colors.black,
+                          // 背景顏色
+                          textColor: Colors.white, // 文字顏色
+                        );
+                      });
+                    },
+                    child: Text('修改'),
+                  ),
+                ),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: myWidth,
+                    vertical: myHeight,
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _saveData();
                       Fluttertoast.showToast(
-                        msg: "已修改",
+                        msg: "已存檔",
                         // 顯示的訊息
                         toastLength: Toast.LENGTH_SHORT,
                         // 顯示時長
@@ -228,66 +313,54 @@ class _MyHomePageState extends State<MyHomePage> {
                         // 背景顏色
                         textColor: Colors.white, // 文字顏色
                       );
-                    });
-                  },
-                  child: Text('修改'),
-                ),
-                SizedBox(width: 50),
-                ElevatedButton(
-                  onPressed: () {
-                    _saveData();
-                    Fluttertoast.showToast(
-                      msg: "已存檔",
-                      // 顯示的訊息
-                      toastLength: Toast.LENGTH_SHORT,
-                      // 顯示時長
-                      gravity: ToastGravity.CENTER,
-                      // 顯示位置
-                      timeInSecForIosWeb: 1,
-                      // iOS Web 端顯示時間
-                      backgroundColor: Colors.black,
-                      // 背景顏色
-                      textColor: Colors.white, // 文字顏色
-                    );
-                  },
-                  child: Text('存檔'),
+                    },
+                    child: Text('存檔'),
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 20),
             Row(
               children: <Widget>[
-                SizedBox(width: 50),
-                Text('(000)中央銀行(鋒兄分行)存款金額：∞ '),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: myWidth,
+                    vertical: myHeight,
+                  ),
+                  child: Text('(000)中央銀行(鋒兄分行)存款金額：∞ '),
+                ),
               ],
             ),
-            SizedBox(height: 20),
             Row(
               children: <Widget>[
-                SizedBox(width: 50),
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Feng37_2025'),
-                          content: Text(
-                            '委任第五職等\n簡任第十二職等\n第12屆臺北市長\n第23任總統\n中央銀行鋒兄分行',
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop(); // 關閉對話框
-                              },
-                              child: Text('關閉'),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: myWidth,
+                    vertical: myHeight,
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Feng37_2025'),
+                            content: Text(
+                              '委任第五職等\n簡任第十二職等\n第12屆臺北市長\n第23任總統\n中央銀行鋒兄分行',
                             ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  child: Text('彩蛋'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(); // 關閉對話框
+                                },
+                                child: Text('關閉'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Text('彩蛋'),
+                  ),
                 ),
               ],
             ),
