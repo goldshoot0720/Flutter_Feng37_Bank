@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter_Feng37_Bank'),
+      home: MyHomePage(title: '鋒兄三七銀行'),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -58,6 +59,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String? formattedDate; // null if no save data
   String selectedValue = "0"; // 在這裡聲明 selectedValue，而不是放在 build 方法裡
   List<String> bank_savings = [
     "0",
@@ -93,6 +95,10 @@ class _MyHomePageState extends State<MyHomePage> {
     // 將 List<String> 轉換為單一的字串
     String listAsString = bank_savings.join(","); // 用逗號將列表合併成字符串
     await prefs.setString('bank_savings', listAsString); // 存儲字符串
+    DateTime now = DateTime.now();
+    formattedDate = DateFormat('yyyy-MM-dd kk:mm').format(now);
+    print(formattedDate);
+    await prefs.setString('file_date_time', formattedDate!); // 存儲字符串
     print("Data saved!");
   }
 
@@ -105,6 +111,8 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         bank_savings = loadedList;
       });
+      formattedDate = prefs.getString('file_date_time');
+      print(formattedDate);
       print("Data loaded!");
       _controller.text = bank_savings[0];
     }
@@ -123,6 +131,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // null if no save data
+    if (formattedDate == null){
+      formattedDate = "2025-02-05 20:25";
+    }
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -151,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       myHeight = 30;
     }
-    print(screenWidth.toString() + "," + screenHeight.toString());
+    // print(screenWidth.toString() + "," + screenHeight.toString());
     _controller2.text =
         _controller2.text = calcSumSaving(bank_savings).toString();
     return Scaffold(
@@ -162,7 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(widget.title+" "+formattedDate!),
       ),
       body: SingleChildScrollView(
         // Center is a layout widget. It takes a single child and positions it
