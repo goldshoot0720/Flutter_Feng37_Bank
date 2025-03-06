@@ -59,6 +59,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String howIRich = "";
   String? formattedDate; // null if no save data
   String selectedValue = "0"; // 在這裡聲明 selectedValue，而不是放在 build 方法裡
   List<String> bank_savings = [
@@ -78,6 +79,45 @@ class _MyHomePageState extends State<MyHomePage> {
     int sumSaving = 0;
     for (int i = 0; i < 10; i++) {
       sumSaving += int.parse(bankSavings[i]);
+    }
+    if ( sumSaving >= 100000000){
+      howIRich = "億元豪宅";
+    }
+    else if ( sumSaving >= 10000000){
+      howIRich = "仟萬超跑";
+    }
+    else if ( sumSaving >= 1000000){
+      howIRich = "佰萬第一桶金";
+    }
+    else if ( sumSaving >= 100000){
+      howIRich = "十萬個為什麼";
+    }
+    else if ( sumSaving >= 10000){
+      howIRich = "日本有萬元鈔";
+    }
+    else if ( sumSaving >= 1000){
+      howIRich = "千元鈔票";
+    }
+    else if ( sumSaving >= 100){
+      howIRich = "百元鈔票";
+    }
+    else if ( sumSaving >= 50){
+      howIRich = "五十元銅板價";
+    }
+    else if ( sumSaving >= 10){
+      howIRich = "十元硬幣";
+    }
+    else if ( sumSaving >= 5){
+      howIRich = "五元硬幣";
+    }
+    else if ( sumSaving >= 1){
+      howIRich = "壹元硬幣";
+    }
+    else if ( sumSaving ==  0){
+      howIRich = "從零開始";
+    }
+    else if ( sumSaving < 0){
+      howIRich = "不要負債";
     }
     return sumSaving;
   }
@@ -357,7 +397,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           return AlertDialog(
                             title: Text('Feng37_2025'),
                             content: Text(
-                              '委任第五職等\n簡任第十二職等\n第12屆臺北市長\n第23任總統\n中央銀行鋒兄分行',
+                              howIRich+'\n㊣\n委任第五職等\n簡任第十二職等\n第12屆臺北市長\n第23任總統\n中央銀行鋒兄分行\n',
                             ),
                             actions: <Widget>[
                               TextButton(
