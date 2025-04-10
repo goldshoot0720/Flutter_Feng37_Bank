@@ -3,8 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:postgres/postgres.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 
@@ -124,6 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   TextEditingController _controller = TextEditingController();
   TextEditingController _controller2 = TextEditingController();
+  TextEditingController _controller3 = TextEditingController();
 
   bool isInteger(String str) {
     return int.tryParse(str) != null;
@@ -133,36 +135,125 @@ class _MyHomePageState extends State<MyHomePage> {
   void _saveData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // 將 List<String> 轉換為單一的字串
-    String listAsString = bank_savings.join(","); // 用逗號將列表合併成字符串
-    await prefs.setString('bank_savings', listAsString); // 存儲字符串
+    // String listAsString = bank_savings.join(","); // 用逗號將列表合併成字符串
+    // await prefs.setString('bank_savings', listAsString); // 存儲字符串
     DateTime now = DateTime.now();
     formattedDate = DateFormat('yyyy-MM-dd kk:mm').format(now);
     print(formattedDate);
     await prefs.setString('file_date_time', formattedDate!); // 存儲字符串
     print("Data saved!");
+    await prefs.setString('userNameStr', _controller3.text!);
+    final conn = await Connection.open(
+      Endpoint(
+        host: 'dpg-cvn747bipnbc73d25080-a.oregon-postgres.render.com',
+        database: 'rncoursefeng37',
+        username: 'rncoursefeng37_user',
+        password: '1b8AQoyVtIff8pUGS8by1x1yPV1gxQjT',
+      ),
+      // The postgres server hosted locally doesn't have SSL by default. If you're
+      // accessing a postgres server over the Internet, the server should support
+      // SSL and you should swap out the mode with `SslMode.verifyFull`.
+      settings: ConnectionSettings(sslMode: SslMode.require),
+    );
+    print('has connection!');
+    final result = await conn.execute(
+      r"SELECT * FROM bankdata WHERE userName = $1",
+      parameters: [_controller3.text],
+    );
+    print(result);
+    if(result.isEmpty){
+      print("_saveData() result2");
+      int bank0 = int.parse(bank_savings[0]);
+      int bank1 = int.parse(bank_savings[1]);
+      int bank2 = int.parse(bank_savings[2]);
+      int bank3 = int.parse(bank_savings[3]);
+      int bank4 = int.parse(bank_savings[4]);
+      int bank5 = int.parse(bank_savings[5]);
+      int bank6 = int.parse(bank_savings[6]);
+      int bank7 = int.parse(bank_savings[7]);
+      int bank8 = int.parse(bank_savings[8]);
+      int bank9 = int.parse(bank_savings[9]);
+      final result2 = await conn.execute(
+        r"INSERT INTO bankdata (userName, bank0, bank1, bank2, bank3, bank4, bank5, bank6, bank7, bank8, bank9) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
+        parameters: [_controller3.text,bank0,bank1,bank2,bank3,bank4,bank5,bank6,bank7,bank8,bank9],
+      );
+      print(result2);
+    }
+    else{
+      print("_saveData() result3");
+      int bank0 = int.parse(bank_savings[0]);
+      int bank1 = int.parse(bank_savings[1]);
+      int bank2 = int.parse(bank_savings[2]);
+      int bank3 = int.parse(bank_savings[3]);
+      int bank4 = int.parse(bank_savings[4]);
+      int bank5 = int.parse(bank_savings[5]);
+      int bank6 = int.parse(bank_savings[6]);
+      int bank7 = int.parse(bank_savings[7]);
+      int bank8 = int.parse(bank_savings[8]);
+      int bank9 = int.parse(bank_savings[9]);
+      final result3 = await conn.execute(
+        r"UPDATE bankdata SET bank0 = $1, bank1 = $2, bank2 = $3, bank3 = $4, bank4 = $5, bank5 = $6, bank6 = $7, bank7 = $8, bank8 = $9, bank9 = $10 WHERE userName = $11",
+        parameters: [bank0,bank1,bank2,bank3,bank4,bank5,bank6,bank7,bank8,bank9,_controller3.text],
+      );
+      print(result3);
+    }
+    await conn.close();
   }
 
-  void _loadData() async {
+  void _loadData(bool isModify) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? listAsString = prefs.getString('bank_savings');
-    if (listAsString != null) {
+    // String? listAsString = prefs.getString('bank_savings');
+    // if (listAsString != null) {
       // 將字符串分割回 List<String>
-      List<String> loadedList = listAsString.split(",");
+      // List<String> loadedList = listAsString.split(",");
+      final conn = await Connection.open(
+        Endpoint(
+          host: 'dpg-cvn747bipnbc73d25080-a.oregon-postgres.render.com',
+          database: 'rncoursefeng37',
+          username: 'rncoursefeng37_user',
+          password: '1b8AQoyVtIff8pUGS8by1x1yPV1gxQjT',
+        ),
+        // The postgres server hosted locally doesn't have SSL by default. If you're
+        // accessing a postgres server over the Internet, the server should support
+        // SSL and you should swap out the mode with `SslMode.verifyFull`.
+        settings: ConnectionSettings(sslMode: SslMode.require),
+      );
+      print('has connection!');
+      if ( isModify ){
+        await prefs.setString('userNameStr', _controller3.text!);
+      }
+      else{
+        _controller3.text = prefs.getString('userNameStr')!;
+      }
+      final result = await conn.execute(
+        r"SELECT * FROM bankdata WHERE userName = $1",
+        parameters: [_controller3.text],
+      );
+      await conn.close();
       setState(() {
-        bank_savings = loadedList;
+        bank_savings[0] = result[0][1].toString();
+        bank_savings[1] = result[0][2].toString();
+        bank_savings[2] = result[0][3].toString();
+        bank_savings[3] = result[0][4].toString();
+        bank_savings[4] = result[0][5].toString();
+        bank_savings[5] = result[0][6].toString();
+        bank_savings[6] = result[0][7].toString();
+        bank_savings[7] = result[0][8].toString();
+        bank_savings[8] = result[0][9].toString();
+        bank_savings[9] = result[0][10].toString();
       });
       formattedDate = prefs.getString('file_date_time');
       print(formattedDate);
       print("Data loaded!");
       _controller.text = bank_savings[0];
-    }
+    // }
   }
 
   // 在這裡進行初始化
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _loadData(false);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -203,6 +294,9 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       myHeight = 30;
     }
+
+    myHeight /= 1.5;
+
     // print(screenWidth.toString() + "," + screenHeight.toString());
     _controller2.text =
         _controller2.text = calcSumSaving(bank_savings).toString();
@@ -343,7 +437,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Text('修改'),
                   ),
                 ),
-
                 Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: myWidth,
@@ -367,6 +460,28 @@ class _MyHomePageState extends State<MyHomePage> {
                       );
                     },
                     child: Text('存檔'),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: myWidth/2,
+                    vertical: myHeight,
+                  ),
+                  child: Text('使用者名稱：'),
+                ),
+                Container(
+                  width: 200, // Set the width of the TextField
+
+                  child: TextField(
+                    controller: _controller3,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: '請輸入使用者名稱',
+                    ),
                   ),
                 ),
               ],
@@ -412,6 +527,31 @@ class _MyHomePageState extends State<MyHomePage> {
                       );
                     },
                     child: Text('彩蛋'),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: myWidth,
+                    vertical: myHeight,
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _loadData(true);
+                      Fluttertoast.showToast(
+                        msg: "已讀檔",
+                        // 顯示的訊息
+                        toastLength: Toast.LENGTH_SHORT,
+                        // 顯示時長
+                        gravity: ToastGravity.CENTER,
+                        // 顯示位置
+                        timeInSecForIosWeb: 1,
+                        // iOS Web 端顯示時間
+                        backgroundColor: Colors.black,
+                        // 背景顏色
+                        textColor: Colors.white, // 文字顏色
+                      );
+                    },
+                    child: Text('讀檔'),
                   ),
                 ),
               ],
