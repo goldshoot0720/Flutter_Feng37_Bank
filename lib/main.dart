@@ -338,7 +338,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Text('金融機構：'),
                 ),
                 Container(
-                  width: 150, // Set the width of the TextField
+                  width: 200, // Set the width of the TextField
 
                   child: CustomDropdown(
                     selectedValue: selectedValue,
@@ -598,16 +598,16 @@ class _CustomDropdownState extends State<CustomDropdown> {
         });
       },
       items: [
-        DropdownMenuItem(value: '0', child: Text('(006)合作金庫')),
-        DropdownMenuItem(value: '1', child: Text('(013)國泰世華')),
-        DropdownMenuItem(value: '2', child: Text('(017)兆豐銀行')),
-        DropdownMenuItem(value: '3', child: Text('(048)王道銀行')),
-        DropdownMenuItem(value: '4', child: Text('(103)新光銀行')),
-        DropdownMenuItem(value: '5', child: Text('(396)街口支付')),
+        DropdownMenuItem(value: '0', child: Text('(006)合作金庫(5880)')),
+        DropdownMenuItem(value: '1', child: Text('(012)台北富邦(2881)')),
+        DropdownMenuItem(value: '2', child: Text('(013)國泰世華(2882)')),
+        DropdownMenuItem(value: '3', child: Text('(017)兆豐銀行(2886)')),
+        DropdownMenuItem(value: '4', child: Text('(048)王道銀行(2897)')),
+        DropdownMenuItem(value: '5', child: Text('(103)新光銀行(2888)')),
         DropdownMenuItem(value: '6', child: Text('(700)中華郵政')),
-        DropdownMenuItem(value: '7', child: Text('(808)玉山銀行')),
-        DropdownMenuItem(value: '8', child: Text('(812)台新銀行')),
-        DropdownMenuItem(value: '9', child: Text('(822)中國信託')),
+        DropdownMenuItem(value: '7', child: Text('(808)玉山銀行(2884)')),
+        DropdownMenuItem(value: '8', child: Text('(812)台新銀行(2887)')),
+        DropdownMenuItem(value: '9', child: Text('(822)中國信託(2891)')),
       ],
     );
   }
