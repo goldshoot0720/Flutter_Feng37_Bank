@@ -338,7 +338,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Text('金融機構：'),
                 ),
                 Container(
-                  width: 200, // Set the width of the TextField
+                  width: 177, // Set the width of the TextField
 
                   child: CustomDropdown(
                     selectedValue: selectedValue,
